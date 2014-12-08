@@ -1,0 +1,22 @@
+{
+  "name": "generate_conf",
+  "description": "generate config file",
+  "version": "0.0.1",
+  "author": {
+    "name": "vicanso 小墨鱼",
+    "email": "vicansocanbico@gmail.com"
+  },
+  "keywords": [
+    "express,base"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vicanso/generate_conf.git"
+  },
+  "main": "app",
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "lodash": "^2.4.1"
+  }
+}
