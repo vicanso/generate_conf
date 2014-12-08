@@ -27,6 +27,10 @@ acl ADMIN {
   "localhost";
 }
 
+sub vcl_init{
+<%= initConfig %>
+}
+
 
 sub vcl_recv {
   call health_check;
@@ -154,6 +158,3 @@ sub ban{
 }
 
 
-sub vcl_init{
-<%= initConfig %>
-}
