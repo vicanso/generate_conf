@@ -8,6 +8,7 @@ backend <%= name %>{
   .host = "<%= host %>";
   .port = "<%= port %>";
   .connect_timeout = 3s;
+  .max_connections = 500;
   .first_byte_timeout = 10s;
   .between_bytes_timeout = 2s;
   .probe = {
@@ -35,10 +36,7 @@ sub vcl_init{
 sub vcl_recv {
   call health_check;
   call ban;
-
-
-  # 不同的HOST选择不同的backend
-<%= backendSelectConfig %>
+  call purge;
 
   # 设置x-forwarded-for
   if(req.restarts == 0){
@@ -48,6 +46,21 @@ sub vcl_recv {
       set req.http.X-Forwarded-For = client.ip;
     }
   }
+
+  # Normalize the header, remove the port (in case you're testing this on various TCP ports)
+  set req.http.Host = regsub(req.http.Host, ":[0-9]+", "");
+
+
+  # Normalize the query arguments
+  set req.url = std.querysort(req.url);
+
+
+  # 不同的HOST选择不同的backend
+<%= backendSelectConfig %>
+
+
+
+
 
   # 如果请求类型不是以下几种，使用pipe
   if(req.method != "GET" &&
@@ -60,6 +73,13 @@ sub vcl_recv {
     return (pipe);  
   }
 
+
+  # Implementing websocket support (https://www.varnish-cache.org/docs/4.0/users-guide/vcl-example-websockets.html)
+  if (req.http.Upgrade ~ "(?i)websocket") {
+    return (pipe);
+  }
+
+
   if(req.http.Authorization){
     return (pass);
   }
@@ -69,10 +89,18 @@ sub vcl_recv {
     return (pass);
   }
 
-
+  # Send Surrogate-Capability headers to announce ESI support to backend
+  set req.http.Surrogate-Capability = "key=ESI/1.0";
 
   unset req.http.Cookie; 
   return (hash);
+}
+
+sub vcl_pipe {
+  if(req.http.upgrade){
+    set bereq.http.upgrade = req.http.upgrade;
+  }
+  return (pipe);
 }
 
 
@@ -93,6 +121,13 @@ sub vcl_hit{
 }
 
 sub vcl_backend_response {
+
+
+  # Pause ESI request and remove Surrogate-Control header
+  if (beresp.http.Surrogate-Control ~ "ESI/1.0") {
+    unset beresp.http.Surrogate-Control;
+    set beresp.do_esi = true;
+  }
   
   # 如果返回的请求为出错请求，重试1次之后，abandon
   if(beresp.status >= 500){
@@ -123,6 +158,10 @@ sub vcl_deliver {
     # You can do accounting or modifying the final object here.
     set resp.http.X-hits = obj.hits;
     return (deliver);
+}
+
+sub vcl_miss{
+  return (fetch);
 }
 
 # 生成hash的方法
@@ -157,4 +196,17 @@ sub ban{
   }
 }
 
+
+sub purge{
+  # Allow purging
+  if (req.method == "PURGE") {
+    if (!client.ip ~ ADMIN) { # purge is the ACL defined at the begining
+      # Not from an allowed IP? Then die with an error.
+      return (synth(405, "This IP is not allowed to send PURGE requests."));
+    }
+    # If you got this stage (and didn't error out above), purge the cached result
+    return (purge);
+  }
+
+}
 
