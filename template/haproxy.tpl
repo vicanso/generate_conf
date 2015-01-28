@@ -6,6 +6,8 @@ global
   #chroot /usr/local/sbin/haproxy  #chroot运行的路径
   #daemon   #以后台形式运行haproxy
   nbproc <%= nbproc %>  #进程数量(可以设置多个进程提高性能)
+  # log-send-hostname  #log中带上服务器的hostname
+  log-tag [HAPROXY]
   
 ###默认全局配置信息###
 ###这些参数可以被利用配置到frontend，backend，listen组件###
@@ -28,8 +30,20 @@ defaults
 ###frontend配置###
 ###注意，frontend配置里面可以定义多个acl进行匹配操作###
 
-frontend 80port 
+frontend 80port
   bind 0.0.0.0:80 
+
+  # log the name of the virtual server
+  capture request header Host len 20
+  # log the beginning of the referrer
+  capture request header Referer len 20
+  # log uuid cookie
+  capture cookie vicanso len 44
+
+
+
+  
+
   ###acl策略配置###
 
   #不可缓存的http请求#
