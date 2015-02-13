@@ -129,12 +129,12 @@ sub vcl_backend_response {
     set beresp.do_esi = true;
   }
   
-  # 如果返回的请求为出错请求，重试1次之后，abandon
+  # 如果返回的请求为出错响应，重试1次
   if(beresp.status >= 500){
     if(bereq.retries == 0){
       return (retry);
     }else{
-      return (abandon);
+      return (deliver);
     }
   }
 

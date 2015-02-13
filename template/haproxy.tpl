@@ -36,7 +36,10 @@ frontend 80port
   # log the name of the virtual server
   capture request header Host len 20
   # log the beginning of the referrer
-  capture request header Referer len 20
+  capture request header Referer len 100
+  # log the User-Agent
+  capture request header User-Agent len 100
+  
   # log uuid cookie
   capture cookie vicanso len 44
 
