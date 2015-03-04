@@ -34,11 +34,11 @@ frontend 80port
   bind 0.0.0.0:80 
 
   # log the name of the virtual server
-  capture request header Host len 20
+  capture request header Host len 40
   # log the beginning of the referrer
-  capture request header Referer len 100
+  capture request header Referer len 200
   # log the User-Agent
-  capture request header User-Agent len 100
+  capture request header User-Agent len 200
   
   # log uuid cookie
   capture cookie vicanso len 44
