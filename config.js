@@ -2,8 +2,8 @@ module.exports = {
   path : '/vicanso/config',
   haproxy : {
     log : {
-      host : '127.0.0.1',
-      port : 2900,
+      host : '10.169.103.92',
+      port : 7000,
       name : 'local0'
     },
     //最大连接数
