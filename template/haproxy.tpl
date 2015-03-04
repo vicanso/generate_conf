@@ -52,6 +52,11 @@ frontend 80port
   #不可缓存的http请求#
   acl node url_end ?cache=false
   acl node url_end &cache=false
+  
+  #websocket
+  acl node path_beg /socket.io
+  acl node hdr(Upgrade) -i WebSocket
+  acl node hdr_beg(Host) -i ws
 
 <%= aclConfig %>
 
