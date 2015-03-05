@@ -41,7 +41,6 @@ frontend 80port
   capture request header User-Agent len 200
   
   # log uuid cookie
-  capture cookie vicanso len 120
   capture cookie jtuuid len 50
 
 
