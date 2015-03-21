@@ -3,5 +3,6 @@ module.exports = {
   varnish : require('./varnish'),
   backend : require('./backend'),
   mongodb : require('./mongodb'),
-  redis : require('./redis')
+  redis : require('./redis'),
+  docker : require('./docker')
 };

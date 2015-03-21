@@ -30,8 +30,8 @@ defaults
 ###frontend配置###
 ###注意，frontend配置里面可以定义多个acl进行匹配操作###
 
-frontend 80port
-  bind 0.0.0.0:80 
+frontend <%= port %>port
+  bind 0.0.0.0:<%= port %> 
 
   # log the name of the virtual server
   capture request header Host len 40

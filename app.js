@@ -10,3 +10,4 @@ require('./lib/varnish')(config);
 require('./lib/mongodb')(config);
 require('./lib/redis')(config);
 require('./lib/supervisor')(config);
+require('./lib/docker')(config);

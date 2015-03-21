@@ -7,7 +7,7 @@ module.exports = {
     cluster : [
       {
         port : 10010,
-        host : 'dashboard'
+        host : '10.169.103.92'
       }
     ]
   },
@@ -18,7 +18,7 @@ module.exports = {
     cluster : [
       {
         port : 10020,
-        host : 'docs'
+        host : '10.169.103.92'
       }
     ]
   }
