@@ -2,6 +2,9 @@
 module.exports = {
   dashboard : {
     host : 'dashboard.vicanso.com',
+    // 选择服务器的方式，默认使用host
+    selectType : 'url',
+    prefix : '/dashboard',
     // haproxy的balance方式，参考haproxy文档
     balance : 'uri whole',
     cluster : [

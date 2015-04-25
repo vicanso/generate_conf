@@ -73,6 +73,11 @@ sub vcl_recv {
     return (pipe);  
   }
 
+  # 不缓存数据处理
+  if(req.url ~ "\?cache=false" || req.url ~ "&cache=false" || req.http.v-nocache){
+    return (pass);
+  }
+
 
   # Implementing websocket support (https://www.varnish-cache.org/docs/4.0/users-guide/vcl-example-websockets.html)
   if (req.http.Upgrade ~ "(?i)websocket") {
@@ -92,7 +97,7 @@ sub vcl_recv {
   # Send Surrogate-Capability headers to announce ESI support to backend
   set req.http.Surrogate-Capability = "key=ESI/1.0";
 
-  unset req.http.Cookie; 
+  # unset req.http.Cookie; 
   return (hash);
 }
 
@@ -129,13 +134,9 @@ sub vcl_backend_response {
     set beresp.do_esi = true;
   }
   
-  # 如果返回的请求为出错响应，重试1次
+  # 如果返回的请求为出错响应，直接返回
   if(beresp.status >= 500){
-    if(bereq.retries == 0){
-      return (retry);
-    }else{
-      return (deliver);
-    }
+    return (deliver);
   }
 
 
